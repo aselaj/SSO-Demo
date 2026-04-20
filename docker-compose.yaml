@@ -1,0 +1,22 @@
+version: '3'
+services:
+  # This is the "hidden" app students can only see AFTER logging in
+  webapp:
+    image: gcr.io/google-samples/hello-app:1.0
+    expose:
+      - "8080"
+
+  # This is the gatekeeper (SSO Proxy)
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:latest
+    ports:
+      - "4180:4180"
+    environment:
+      OAUTH2_PROXY_PROVIDER: "google"
+      OAUTH2_PROXY_CLIENT_ID: "97034762423-orhnk6g4h2rlqmkf500k03e6m226dbiv.apps.googleusercontent.com"
+      OAUTH2_PROXY_CLIENT_SECRET: "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"
+      OAUTH2_PROXY_REDIRECT_URL: "http://localhost:4180/oauth2/callback"
+      OAUTH2_PROXY_UPSTREAM: "http://webapp:8080"
+      OAUTH2_PROXY_HTTP_ADDRESS: "0.0.0.0:4180"
+      OAUTH2_PROXY_EMAIL_DOMAINS: "*" # Allows any email added as a test user
+      OAUTH2_PROXY_COOKIE_SECRET: "thisismysecretkeyfortestingmyapp"
